@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  productdb:
+    container_name: app-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:80"                        
+
+
+
+
+
+  rbac.api:
+    image: ${DOCKER_REGISTRY-}rbacapi
+    build:
+      context: .
+      dockerfile: RBAC_Project/Dockerfile
+    depends_on:
+     - productdb
+    environment:
+      CONNECTION_STRING: "data source=.;Initial Catalog=Rbac_DB;Trusted_Connection = true;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;Integrated Security=True"
+      DB-HOST: localhost
+      DB-NAME: Rbac_Db
