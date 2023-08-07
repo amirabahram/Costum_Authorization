@@ -22,15 +22,16 @@ namespace RBAC.Presistence.Extensions
         {
             //For Entity Framework
 
-            services.AddDbContext<RbacContext>(Options =>
-            {
-                Options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-            }
-            );
+            //services.AddDbContext<RbacContext>(Options =>
+            //{
+            //    Options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            //}
+            //);
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthorizationHandler,ProductCreatorOrRoleRequirementHandler>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProductRolesRepository,ProductRolesRepository>();
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;

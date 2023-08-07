@@ -34,7 +34,13 @@ namespace RBAC.Api.Controllers
             }
             return Ok(result);
         }
-        
+        [HttpPost("Add-Role-To-Product")]
+        public async Task<IActionResult> AddRole([FromBody] AddRoleToProductRequest request)
+        {
+            var result = await mediator.Send(request);
+            if(result.IsSucceed == false) return BadRequest(result.Message);
+            return Ok(result);
+        }
         [HttpDelete("ID")]
         //[Authorize("MustBeCreatorOfProduct")]
         [Authorize("MustBeCreatorOfProductOrDynamicRole")]

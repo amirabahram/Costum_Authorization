@@ -5,9 +5,10 @@ services:
     container_name: app-db
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      ACCEPT_EULA: Y
+     - ACCEPT_EULA=Y
+    
     ports:
-      - "1433:80"                        
+      - "8002:1433"                        
 
 
 
@@ -20,7 +21,9 @@ services:
       dockerfile: RBAC_Project/Dockerfile
     depends_on:
      - productdb
+    ports:
+    - "8001:80"
     environment:
-      CONNECTION_STRING: "data source=.;Initial Catalog=Rbac_DB;Trusted_Connection = true;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;Integrated Security=True"
-      DB-HOST: localhost
-      DB-NAME: Rbac_Db
+    - DB-HOST=productdb
+    - DB-NAME=Rbac_DataBase
+    

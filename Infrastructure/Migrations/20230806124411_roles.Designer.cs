@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RBAC.Presistence;
 
@@ -11,9 +12,10 @@ using RBAC.Presistence;
 namespace RBAC.Presistence.Migrations
 {
     [DbContext(typeof(RbacContext))]
-    partial class RbacContextModelSnapshot : ModelSnapshot
+    [Migration("20230806124411_roles")]
+    partial class roles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,28 +53,28 @@ namespace RBAC.Presistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6a29a5bf-d7b4-4089-bdd8-e1cc7800bc9f",
+                            Id = "41bb5394-45fc-4f39-a3ed-0bf5efd432c3",
                             ConcurrencyStamp = "1",
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = "f4820c6b-32d5-44ce-990a-fcb350cb0733",
+                            Id = "be3ee54e-d76b-4a25-81af-d0ef42b2fa8b",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "51ed110d-198a-4a43-b46c-547b652b01c1",
+                            Id = "8aca75ec-e7cc-45bf-ae4d-bf60b7fd62c3",
                             ConcurrencyStamp = "1",
                             Name = "developer",
                             NormalizedName = "developer"
                         },
                         new
                         {
-                            Id = "4290725f-0860-4ec6-8baf-7a9737baaa65",
+                            Id = "22b43556-8150-45d4-b33a-a9f96196f6d6",
                             ConcurrencyStamp = "1",
                             Name = "tester",
                             NormalizedName = "tester"
@@ -250,6 +252,28 @@ namespace RBAC.Presistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("RBAC.Domain.Entities.Products.PermittedRoles", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("PermittedRoles");
+                });
+
             modelBuilder.Entity("RBAC.Domain.Entities.Products.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -271,30 +295,6 @@ namespace RBAC.Presistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("RBAC.Domain.Entities.Products.ProductRole", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("ProductRoles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -348,6 +348,17 @@ namespace RBAC.Presistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RBAC.Domain.Entities.Products.PermittedRoles", b =>
+                {
+                    b.HasOne("RBAC.Domain.Entities.Products.Product", "Product")
+                        .WithMany("PermittedRoles")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("RBAC.Domain.Entities.Products.Product", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
@@ -357,25 +368,6 @@ namespace RBAC.Presistence.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RBAC.Domain.Entities.Products.ProductRole", b =>
-                {
-                    b.HasOne("RBAC.Domain.Entities.Products.Product", "Product")
-                        .WithMany("PermittedRoles")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("RBAC.Domain.Entities.Products.Product", b =>

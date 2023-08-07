@@ -17,21 +17,34 @@ namespace RBAC.Application.Features.Queries.GetAllEvent
         public string Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public string Role { get; set; }
+        public List<string> Roles { get; set; }
     }
     public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQueryRequest, List<GetAllUsersQueryResponse>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
-        public GetAllUsersQueryHandler(IUserRepository userRepository,IMapper mapper)
+        private readonly UserManager<IdentityUser> _userManager;
+        public GetAllUsersQueryHandler(IUserRepository userRepository,UserManager<IdentityUser> userManager)
         {
             this._userRepository = userRepository;
-            this._mapper = mapper;
+            this._userManager = userManager;
         }
         public async Task<List<GetAllUsersQueryResponse>> Handle(GetAllUsersQueryRequest request, CancellationToken cancellationToken)
         {
            var users = await _userRepository.GetAllUsers();
-           return _mapper.Map<List<GetAllUsersQueryResponse>>(users);
+            var responses = new List<GetAllUsersQueryResponse>();
+            foreach(var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var response = new GetAllUsersQueryResponse()
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Name = user.UserName,
+                    Roles = roles as List<string>
+                };
+                responses.Add(response);
+            }
+            return responses;
         }
     }
 }

@@ -15,6 +15,6 @@ namespace RBAC.Domain.Entities.Products
         public string UserId { get; set; }
         public IdentityUser User { get; set; }
         public string Title { get; set; }
-        public string PermittedRole { get; set; }
+        public List<ProductRole> PermittedRoles { get; set; }
     }
 }

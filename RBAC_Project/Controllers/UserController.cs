@@ -16,11 +16,11 @@ namespace RBAC.Api.Controllers
             _mediator = mediator;
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllUsers()
-        //{
-        //    return Ok(await _mediator.Send(new GetAllUsersQueryRequest()));
-        //}
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            return Ok(await _mediator.Send(new GetAllUsersQueryRequest()));
+        }
 
 
         [HttpPost("Register")]

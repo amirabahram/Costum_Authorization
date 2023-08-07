@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RBAC.Application.Services.Interfaces;
+using RBAC.Domain.Entities.Products;
 using RBAC.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -20,18 +21,22 @@ namespace RBAC.Presistence.Authorization
     public class ProductCreatorOrRoleRequirementHandler : AuthorizationHandler<ProductCreatorOrRoleRequirement>
     {
         private readonly IProductRepository _productRepository;
+        private readonly IProductRolesRepository _permittedRolesRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userServise;
         public ProductCreatorOrRoleRequirementHandler(IProductRepository productRepository,
             IHttpContextAccessor httpContextAccessor,
-            IUserService userService)
+            IUserService userService,
+            IProductRolesRepository repo)
         {
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _userServise = userService;
+            _permittedRolesRepository = repo;
+           
         }
 
-        protected override Task HandleRequirementAsync(
+        protected override async Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             ProductCreatorOrRoleRequirement requirement)
         {
@@ -39,7 +44,7 @@ namespace RBAC.Presistence.Authorization
             if (!context.User.Identities.Any(c => c.IsAuthenticated == true))//if user is logged in or not
             {
                 context.Fail();
-                return Task.CompletedTask;
+                
             }
 
 
@@ -54,7 +59,7 @@ namespace RBAC.Presistence.Authorization
             using (StreamReader reader
                       = new StreamReader(req.Body, Encoding.UTF8, true, 1024, true))
             {
-                bodyStr = reader.ReadToEndAsync().GetAwaiter().GetResult();
+                bodyStr = await reader.ReadToEndAsync();
             }
 
             // Rewind, so the core is not lost when it looks at the body for the request
@@ -66,20 +71,26 @@ namespace RBAC.Presistence.Authorization
 
 
             var manipulatorId = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+            string productCreatorId = await _productRepository.GetUserIdByProductId(id);
+            //var product = _productRepository.Get(id);
             
-            string productCreatorId = _productRepository.GetUserIdByProductId(id).GetAwaiter().GetResult();
-           var product = _productRepository.Get(id);
-            var userRoles = _userServise.GetUserRoles(manipulatorId).GetAwaiter().GetResult();
             if (productCreatorId == manipulatorId)
             {
                 context.Succeed(requirement);
-                return Task.CompletedTask;
+                
             }
+            var userRoles = await _userServise.GetUserRoles(manipulatorId);
+            var permittedRoles = await _permittedRolesRepository.GetRolesByProductId(id);
             foreach ( var role in userRoles )
             {
-                if(role.Name.Equals(product.PermittedRole))  context.Succeed(requirement);
+                foreach( var permittedRole in permittedRoles)
+                {
+                    if (role.Id == permittedRole.RoleId) context.Succeed(requirement);
+                }
+              
             }
-            return Task.CompletedTask;
+            
         }
     }
 }

@@ -21,11 +21,10 @@ namespace RBAC.Application.Mapping
             CreateMap<Product, CreateProductCommandRequest>().ReverseMap();
             CreateMap<Product,UpdateProductCommandRequest>().ReverseMap();
             CreateMap<IdentityUser,RegisterUserRequest>().ReverseMap();
-            
+            CreateMap<ProductRole,AddRoleToProductRequest>().ReverseMap();
 
             //Queries
             CreateMap<Product,GetAllProductsQueryResponse>().ReverseMap();
-            CreateMap<IdentityUser, GetAllUsersQueryResponse>().ReverseMap();
         }
     }
 }

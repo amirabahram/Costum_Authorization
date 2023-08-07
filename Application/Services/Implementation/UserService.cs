@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using RBAC.Application.Features.Commands.CreateEvent;
@@ -43,6 +44,7 @@ namespace RBAC.Application.Services.Implementation
             var result = await _userManager.FindByEmailAsync(email);
             if (result == null) { return false; }
             return true;
+            
         }
 
         public async Task<AuthenticationResponse> GenerateAuthenticationResponseForUserAsync(IdentityUser user)
@@ -148,8 +150,9 @@ namespace RBAC.Application.Services.Implementation
 
         public async Task<List<IdentityRole>> GetUserRoles(string id)
         {
-  
+            
             var user = await _userManager.FindByIdAsync(id);
+         
             var roles = await _userManager.GetRolesAsync(user);
             var identityRoles = new List<IdentityRole>();
             foreach (var role in roles)

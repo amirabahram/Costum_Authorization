@@ -25,7 +25,11 @@ namespace RBAC.Presistence.Repositories
 
         public async Task<List<IdentityUser>> GetAllUsers()
         {
-              return  await _userManager.Users.ToListAsync();
+            return  await _userManager.Users.ToListAsync();
+            var users = _userManager.Users;
+            //var userWithRole = await(from user in _db.Users
+            //                         join userRole in _db.UserRoles
+            //                         on user.Id equals userRole.UserId).ToListAsync();
              
             
         }

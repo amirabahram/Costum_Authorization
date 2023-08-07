@@ -16,5 +16,7 @@ namespace RBAC.Domain.Entities.Common
 
         public const string UPDATED_USER_SUCCESSFULLY = "User has been updated!";
         public const string UPDATED_PRODUCT_SUCCESSFULLY = "Product has been updated!";
+
+        public const string ADDED_ROLE_TO_PRODUCT = "Role Added to product successfuly!";
     }
 }

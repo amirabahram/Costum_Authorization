@@ -18,6 +18,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 ServicesRegistration.AddPresistenceServices(builder.Services,builder.Configuration);
 ServiceRegistration.AddApplicationServices(builder.Services);
+var dbHost = Environment.GetEnvironmentVariable("DB-HOST");
+var dbName = Environment.GetEnvironmentVariable("DB-NAME");
+var password = Environment.GetEnvironmentVariable("DB-SA-PASSWORD");
+var connectionString = $"Data Source={dbHost},1433;Initial Catalog={dbName};User ID=sa;Password={password};MultipleActiveResultSets=true";
+builder.Services.AddDbContext<RbacContext>(opt=>opt.UseSqlServer(connectionString));
+
 
 //For Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()

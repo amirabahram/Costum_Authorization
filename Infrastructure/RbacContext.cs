@@ -41,6 +41,7 @@ namespace RBAC.Presistence
         }
         private static void SeedRoles(ModelBuilder builder)
         {
+            
             builder.Entity<IdentityRole>().HasData
                 (
                 new IdentityRole() { Name = "User", ConcurrencyStamp = "1", NormalizedName = "User" },
@@ -52,5 +53,9 @@ namespace RBAC.Presistence
         }
 
         public DbSet<Product>  Products { get; set; }
+        public DbSet<ProductRole> ProductRoles { get; set; }
+
+
+
     }
 }

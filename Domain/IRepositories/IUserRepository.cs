@@ -10,5 +10,6 @@ namespace RBAC.Domain.IRepositories
     public interface IUserRepository 
     {
         Task<List<IdentityUser>> GetAllUsers();
+        
     }
 }

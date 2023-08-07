@@ -17,28 +17,36 @@ namespace RBAC.Application.Features.Commands.UpdateEvent
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string PermittedRole { get; set; }
     }
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommandRequest, AppResponse>
     {
         private readonly IMapper _mapper;
         private readonly IProductRepository _productRepository;
         private readonly IUserService _userService;
+        private readonly IProductRolesRepository _permittedRolesRepository;
 
         public UpdateProductCommandHandler(IMapper mapper,
             IProductRepository productRepository,
-            IUserService userService)
+            IUserService userService,
+            IProductRolesRepository permittedRolesRepository)
         {
             this._mapper = mapper;  
             this._productRepository = productRepository;
             this._userService = userService;
+            this._permittedRolesRepository = permittedRolesRepository;
         }
         public async Task<AppResponse> Handle(UpdateProductCommandRequest request, CancellationToken cancellationToken)
         {
-            var product = _mapper.Map<Product>(request);
+            //var product = _mapper.Map<Product>(request);
             var userId = await _userService.GetUserId();
-            product.UserId = userId;
+            var product = new Product()
+            {
+                Title = request.Title,
+                UserId = userId,
+                Id = request.Id
+            };
             _productRepository.Update(product);
+           
             return new SuccessResponse(ResultMessages.UPDATED_PRODUCT_SUCCESSFULLY);
 
         }

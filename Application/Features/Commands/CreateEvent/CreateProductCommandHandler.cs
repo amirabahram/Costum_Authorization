@@ -16,11 +16,10 @@ namespace RBAC.Application.Features.Commands.CreateEvent
     public class CreateProductCommandRequest : IRequest<AppResponse>
     {
         public string Title { get; set; }
-        public string PermittedRole { get; set; }
-        public CreateProductCommandRequest(string title, string permittedRole)
+        public CreateProductCommandRequest(string title, List<string> permittedRole)
         {
             this.Title = title;
-            this.PermittedRole = permittedRole;
+           
         }
     }
 
@@ -28,16 +27,20 @@ namespace RBAC.Application.Features.Commands.CreateEvent
     {
         private readonly IMapper _mapper;
         private readonly IProductRepository _prductRepository;
+        private readonly IProductRolesRepository _permittedRolesRepository;
+
         private readonly IUserService _userService;
 
 
         public CreateProductCommandHandler(IMapper mapper,
             IProductRepository prductRepository,
-            IUserService userService)
+            IUserService userService,
+            IProductRolesRepository permittedRolesRepository)
         {
             _mapper = mapper;
             _prductRepository = prductRepository;
             _userService = userService;
+            _permittedRolesRepository = permittedRolesRepository;
         }
 
 
@@ -45,10 +48,11 @@ namespace RBAC.Application.Features.Commands.CreateEvent
 
         public async Task<AppResponse> Handle(CreateProductCommandRequest request, CancellationToken cancellationToken)
         {
-            var product = _mapper.Map<Product>(request);
             var userId = await _userService.GetUserId();
+            var product = _mapper.Map<Product>(request);
             product.UserId = userId;
             _prductRepository.Add(product);
+
             return await Task.FromResult<AppResponse>(new SuccessResponse(ResultMessages.CREATED_PRODUCT_SUCCESSFULLY));
         }
     }
